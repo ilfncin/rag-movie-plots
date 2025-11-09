@@ -1,0 +1,32 @@
+"""
+Description:
+This script configures the Jupyter Notebook environment to recognize the
+project's package structure, allowing imports from the `src/` directory.
+
+Usage:
+%run notebook_setup.py
+"""
+
+import sys
+from pathlib import Path
+
+
+import sys
+from pathlib import Path
+
+# Detects the project root directory (one level above the `notebooks` folder)
+project_root = Path(__file__).resolve().parents[1]
+
+# Define paths for both src and backend
+src_path = project_root / "src"
+backend_path = src_path / "backend"
+
+# Ensure both paths are added to sys.path (if not already present)
+for path in [src_path, backend_path]:
+    path_str = str(path)
+    if path_str not in sys.path:
+        sys.path.insert(0, path_str)
+
+# Optional: print diagnostic info (helps debugging in notebooks)
+print("CWD:", project_root / "notebooks")
+print("PYTHONPATH:", sys.path[:3])  # show top 3 for clarity

@@ -1,0 +1,37 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug RAG Step",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/backend/main.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "envFile": "${workspaceFolder}/.env",
+      "args": [
+        "--step",
+        "${input:stepName}"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "stepName",
+      "type": "pickString",
+      "description": "Escolha a etapa do pipeline",
+      "options": [
+        "etl",
+        "chunking",
+        "embedding",
+        "persist",
+        "retriever",
+        "chat"
+      ],
+      "default": "etl"
+    }
+  ]
+}
