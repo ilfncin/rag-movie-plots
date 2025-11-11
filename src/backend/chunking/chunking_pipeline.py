@@ -1,4 +1,4 @@
-from backend.config import RAG_CONFIG
+from backend.config import CHUNKING_CONFIG
 from backend.chunking.chunk_strategy import (
     CharacterSplitter, TokenSplitter, RecursiveSplitter
 )
@@ -9,23 +9,21 @@ class ChunkingPipeline:
     def __init__(self, input_path: Path, output_path: Path):
         self.input_path = input_path
         self.output_path = output_path
-        self.config = RAG_CONFIG["chunking"]
-        self.strategy = self._get_splitter()
+        self.strategy = CHUNKING_CONFIG["strategy"]
+        self.chunk_size = CHUNKING_CONFIG["chunk_size"]
+        self.chunk_overlap = CHUNKING_CONFIG["chunk_overlap"]
+        self.splitter = self._get_splitter()
 
     def _get_splitter(self):
-        strategy = self.config["strategy"]
-        chunk_size = self.config["chunk_size"]
-        chunk_overlap = self.config["chunk_overlap"]
-
-        match strategy:
+        match self.strategy:
             case "character":
-                return CharacterSplitter(chunk_size, chunk_overlap)
+                return CharacterSplitter(self.chunk_size, self.chunk_overlap)
             case "token":
-                return TokenSplitter(chunk_size, chunk_overlap)
+                return TokenSplitter(self.chunk_size, self.chunk_overlap)
             case "recursive":
-                return RecursiveSplitter(chunk_size, chunk_overlap)
+                return RecursiveSplitter(self.chunk_size, self.chunk_overlap)
             case _:
-                raise ValueError(f"Unknown strategy: {strategy}")
+                raise ValueError(f"Unknown strategy: {self.strategy}")
 
     def run(self):
         with open(self.input_path, "r", encoding="utf-8") as f:
@@ -33,7 +31,7 @@ class ChunkingPipeline:
 
         chunks = []
         for doc in documents:
-            doc_chunks = self.strategy.split(doc["text"])
+            doc_chunks = self.splitter.split(doc["text"])
             for chunk in doc_chunks:
                 chunks.append({
                     "id": doc["id"],

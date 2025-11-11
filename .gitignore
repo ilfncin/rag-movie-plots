@@ -211,3 +211,6 @@ __marimo__/
 data/**/*.csv
 data/**/*.jsonl
 data/**/*.json
+
+db/chroma/*
+!db/chroma/.gitkeep
