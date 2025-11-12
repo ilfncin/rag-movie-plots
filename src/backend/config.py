@@ -1,3 +1,4 @@
+from pathlib import Path
 import os
 from typing import Dict, Any
 from dotenv import load_dotenv
@@ -31,8 +32,10 @@ EMBEDDING_CONFIG: Dict[str, Any] = {
 }
 
 # Vectorstore Configuration
-VECTORSTORE_CONFIG: Dict[str, Any] = {
-    "persist_dir": os.getenv("PERSIST_DIR", "db/chroma"),
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+VECTORSTORE_CONFIG = {
+    "persist_dir": str((PROJECT_ROOT / os.getenv("PERSIST_DIR", "db/chroma")).resolve())
 }
 
 # Retriever Configuration

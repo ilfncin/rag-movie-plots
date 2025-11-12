@@ -1,59 +1,38 @@
 import argparse
-from pathlib import Path
-from datetime import datetime
 import time
-
-from backend.etl.data_pipeline import DataPipeline
-from backend.chunking.chunking_pipeline import ChunkingPipeline
-from backend.vectorstore.vectorstore_pipeline import VectorStorePipeline
 from backend.utils.time_utils import TimeUtils
-
-# PYTHONPATH=src uv run src/backend/main.py --step etl
-def run_etl():
-    today = datetime.now().strftime("%Y%m%d")
-    project_root = Path(__file__).resolve().parents[2]
-    raw_path = project_root / "data" / "raw" / "wiki_movie_plots_deduped.csv"
-    out_path = project_root / "data" / "processed" / f"v{today}"
-    pipeline = DataPipeline(raw_path=raw_path, output_dir=out_path)
-    pipeline.run()
-
-def run_chunking():
-    today = datetime.now().strftime("%Y%m%d")
-    project_root = Path(__file__).resolve().parents[2]
-    in_path = project_root / "data" / "processed" / f"v{today}" / "docs.jsonl"
-    out_path = project_root / "data" / "processed" / f"v{today}" / "chunks.jsonl"
-
-    pipeline = ChunkingPipeline(input_path=in_path, output_path=out_path)
-    pipeline.run()
-
-def run_vectorstore():
-    today = datetime.now().strftime("%Y%m%d")
-    project_root = Path(__file__).resolve().parents[2]
-    in_path = project_root / "data" / "processed" / f"v{today}" / "chunks.jsonl"
-
-    pipeline = VectorStorePipeline(input_path=in_path)
-    pipeline.run()
+from backend.pipeline.rag_ingestion_pipeline import RAGIngestionPipeline
 
 
-if __name__ == "__main__":
-    start = time.time()
-    parser = argparse.ArgumentParser(description="Pipeline RAG - multi-etapas")
+def main():
+    """Command-line interface for executing RAG pipeline steps."""
+    parser = argparse.ArgumentParser(description="RAG Pipeline Preprocessing Phase (ETL -> Chunking -> VectorStore))")
     parser.add_argument(
         "--step",
         type=str,
         required=True,
-        choices=["etl", "chunking", "vectorstore"],
-        help="Step to execute in the pipeline"
+        choices=["etl", "chunking", "vectorstore", "full"],
+        help="Step to execute: etl, chunking, vectorstore, or full (runs all sequentially)"
     )
+
     args = parser.parse_args()
+
+    start_time = time.time()
+    pipeline = RAGIngestionPipeline()
 
     match args.step:
         case "etl":
-            run_etl()
+            pipeline.run_etl()
         case "chunking":
-            run_chunking()
+            pipeline.run_chunking()
         case "vectorstore":
-            run_vectorstore()
+            pipeline.run_vectorstore()
+        case "full":
+            pipeline.run_full()
 
-    elapsed = time.time() - start
-    print(f"[{args.step}] Completed in {TimeUtils.format_duration(elapsed)}")
+    elapsed = time.time() - start_time
+    print(f"\n[{args.step}] completed in {TimeUtils.format_duration(elapsed)}")
+
+
+if __name__ == "__main__":
+    main()

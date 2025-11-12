@@ -1,5 +1,5 @@
 import json
-import pathlib
+from  pathlib import Path
 
 from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -10,9 +10,14 @@ from backend.config import (
     VECTORSTORE_CONFIG
 )
 
-
 class VectorStorePipeline:
-    def __init__(self, input_path: pathlib.Path):
+    """
+    Builds a vector store (ChromaDB) from preprocessed text chunks.
+
+    Loads JSONL chunks, generates embeddings using a Hugging Face model,
+    and persists them locally for retrieval in RAG workflows.
+    """
+    def __init__(self, input_path: Path):
         self.input_path = input_path
         self.model_name = EMBEDDING_CONFIG["embedding_model"]
         self.persist_dir = VECTORSTORE_CONFIG["persist_dir"]
@@ -34,6 +39,7 @@ class VectorStorePipeline:
         ]
 
         print(f"Generating embeddings with model: {self.model_name}")
+        print(f"Persisting ChromaDB at: {self.persist_dir}")
         Chroma.from_documents(
             documents=documents,
             embedding=self.embedding_function,

@@ -13,34 +13,8 @@ class DataCleaner:
     specific columns where they represent valid information, while still being
     treated as invalid elsewhere.
 
-    This class is typically used in data preprocessing pipelines to ensure that
-    the dataset is clean, consistent, and semantically correct before further
-    processing such as chunking, embedding, or model training.
-
-    Parameters
-    ----------
-    invalid_values : list of str
-        List of string values that should be treated as missing values
-        (e.g., "unknown", "nan", "null").
-    
-    exceptions : dict[str, set[str]], optional
-        A mapping of column names to sets of values that should be preserved
-        even if they appear in the list of invalid tokens. For example:
-        {"Title": {"Unknown"}} ensures that the movie title "Unknown"
-        is not removed during cleaning.
-
-    Methods
-    -------
-    clean(df: pd.DataFrame) -> pd.DataFrame
-        Applies the cleaning process to the input DataFrame and returns a cleaned version.
-
-    _clean_value(val: Any, col: str) -> Any
-        Internal method that converts invalid values into None, unless the
-        value is explicitly listed as a contextual exception.
-
-    _postprocess(df: pd.DataFrame) -> pd.DataFrame
-        Applies additional transformations to specific columns, such as
-        coercing numeric types or formatting textual fields.
+    This ensure the dataset is clean, consistent, and semantically correct 
+    before further processing such as chunking, embedding, or model training.
     """
     def __init__(self, invalid_values: list[str], exceptions: dict[str, set[str]] | None = None):
         self.invalid = set(t.lower() for t in invalid_values)

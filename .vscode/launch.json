@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug RAG Step",
+      "name": "Debug RAG Ingestion",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/src/backend/main.py",
@@ -22,16 +22,14 @@
     {
       "id": "stepName",
       "type": "pickString",
-      "description": "Escolha a etapa do pipeline",
+      "description": "Select the pipeline stage to run",
       "options": [
         "etl",
         "chunking",
-        "embedding",
-        "persist",
-        "retriever",
-        "chat"
+        "vectorstore",
+        "full"
       ],
-      "default": "etl"
+      "default": "full"
     }
   ]
 }

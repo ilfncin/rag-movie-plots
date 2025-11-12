@@ -9,32 +9,9 @@ class JsonlWriter:
     JSON Lines (.jsonl) documents suitable for downstream use in
     Retrieval-Augmented Generation (RAG) pipelines.
 
-    It separates the main text content (defined by `text_column`) from
-    metadata fields (defined by `columns`), fills missing values with a
-    fallback string (`fill_text`), and writes each record as a JSON object
-    containing both "text" and "metadata" fields.
-
-    Parameters
-    ----------
-    output_path : pathlib.Path
-        Path to the output .jsonl file where the documents will be written.
-
-    columns : list of str
-        List of DataFrame columns to include in the metadata or text fields.
-
-    fill_text : str, default = "Not specified"
-        Text to use as a fallback for missing (None or empty) values.
-
-    text_column : str, default = "Plot"
-        Column that contains the main text body of the document. This column
-        will be placed under the "text" key in the JSONL output. All other
-        columns (from `columns`, excluding `text_column`) will be included as metadata.
-
-    Methods
-    -------
-    build(df: pd.DataFrame)
-        Transforms the input DataFrame into a .jsonl file containing
-        one document per line, each with "text" and "metadata" fields.
+    It separates the main text content from metadata fields, fills missing 
+    values with a fallback string (`fill_text`), and writes each record as 
+    a JSON object containing both "text" and "metadata" fields.
     """
     def __init__(self, 
                  output_path: pathlib.Path, 

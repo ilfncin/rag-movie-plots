@@ -21,7 +21,7 @@ class ChatRAG:
         self.top_k = top_k or RETRIEVER_CONFIG["top_k"]
         self.model_name = model_name or LLM_CONFIG["model"]
         self.temperature = temperature or LLM_CONFIG["temperature"]
-        
+        print("Using model:", self.model_name)
         self.llm = ChatOpenAI(
             model=self.model_name,
             temperature=self.temperature,

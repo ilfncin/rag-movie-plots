@@ -6,48 +6,37 @@ from backend.etl.jsonl_writer import JsonlWriter
 
 class DataPipeline:
     """
-    The DataPipeline class orchestrates the end-to-end ETL process
-    for preparing tabular datasets for use in Retrieval-Augmented
-    Generation (RAG) pipelines.
-
-    This includes:
-    - Reading and cleaning the raw CSV dataset
-    - Writing a cleaned CSV version of the data
-    - Generating a .jsonl file with formatted text and metadata
-
-    Parameters
-    ----------
-    raw_path : pathlib.Path
-        Path to the input raw CSV file.
-
-    output_dir : pathlib.Path
-        Directory where cleaned data, JSONL output, and the fingerprint will be saved.
-
-    Methods
-    -------
-    run()
-        Executes the full pipeline: fingerprint check, data cleaning, JSONL generation.
+    Executes the ETL process for the movie dataset:
+    - Reads the raw CSV file.
+    - Cleans the data using the DataCleaner class.
+    - Writes the cleaned CSV and the JSONL version for downstream RAG processing.
     """
-    def __init__(self, raw_path: pathlib.Path, output_dir: pathlib.Path):
+    def __init__(self, raw_path: pathlib.Path, csv_out_path: pathlib.Path, jsonl_out_path: pathlib.Path):
         self.raw_path = raw_path
-        self.output_dir = output_dir
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.csv_out_path = csv_out_path
+        self.jsonl_out_path = jsonl_out_path
 
     def run(self):
         df = pd.read_csv(self.raw_path)
+        print(f"Loaded raw dataset with {len(df)} rows from {self.raw_path}")
+        
         cleaner = DataCleaner(
             invalid_values=CLEANING_CONFIG["invalid_values"],
             exceptions=CLEANING_CONFIG.get("exceptions", {})
         )
         df_clean = cleaner.clean(df)
-        df_clean.to_csv(self.output_dir / "movies_clean.csv", index=False)
+
+        df_clean.to_csv(self.csv_out_path, index=False)
+        print(f"Cleaned CSV saved to {self.csv_out_path}")
 
         writer = JsonlWriter(
-            output_path=self.output_dir / "docs.jsonl",
+            output_path=self.jsonl_out_path,
             columns=CLEANING_CONFIG["columns"],
             fill_text=CLEANING_CONFIG["fill_text"],
             text_column=CLEANING_CONFIG["text_column"]
         )
         writer.build(df_clean)
 
-        print(f"Processado em {self.output_dir}")
+        print(f"JSONL file created at {self.jsonl_out_path}")
+
+        print("Data processing completed successfully.")

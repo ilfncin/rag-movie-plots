@@ -7,10 +7,7 @@ Usage:
 %run notebook_setup.py
 """
 
-import sys
-from pathlib import Path
-
-
+import os
 import sys
 from pathlib import Path
 
@@ -27,6 +24,10 @@ for path in [src_path, backend_path]:
     if path_str not in sys.path:
         sys.path.insert(0, path_str)
 
-# Optional: print diagnostic info (helps debugging in notebooks)
-print("CWD:", project_root / "notebooks")
-print("PYTHONPATH:", sys.path[:3])  # show top 3 for clarity
+os.environ["PYTHONPATH"] = str(src_path)
+
+print("Notebook environment configured successfully!\n")
+print(f"Project root: {project_root}")
+print(f"Added to sys.path:\n  - {src_path}\n  - {backend_path}")
+print(f"PYTHONPATH: {os.environ['PYTHONPATH']}")
+print(f"Current working directory: {Path.cwd()}")

@@ -6,6 +6,13 @@ import json
 from pathlib import Path
 
 class ChunkingPipeline:
+    """
+    Splits text documents into smaller chunks based on the configured strategy
+    (character, token, or recursive) for downstream embedding and retrieval.
+
+    Reads a JSONL file, applies the chosen splitter, and saves the resulting
+    chunks as a new JSONL file.
+    """
     def __init__(self, input_path: Path, output_path: Path):
         self.input_path = input_path
         self.output_path = output_path
