@@ -129,20 +129,6 @@ rag-movie-plots/
 
 ```
 
-**Current Phase**
-
-At this stage of the project:
-- All pipelines are executed directly from notebooks
-- main.py is intentionally minimal and not the primary entry point
-- High-level workflow classes were removed to avoid unnecessary abstraction
-- The notebooks act as:
-    - executable documentation,
-    - experiment runners,
-    - and validation tools
-
-> The `main.py` file is reserved for a future phase, where it will serve as the integration point for a frontend or API layer.
-
-
 ## **Notebooks Overview**
 
 **1.0 - Initial Data Exploration**
@@ -213,4 +199,16 @@ Simply **restart the Jupyter kernel** and run the cell again. This clears the ac
 
 ---
 
+
+## **Status**
+
+This repository is under active development. At this stage of the project:
+- All pipelines are executed directly from notebooks
+- `main.py` is not the primary entry point
+- The notebooks act as:
+    - executable documentation,
+    - experiment runners,
+    - and validation tools
+
+> The `main.py` file is reserved for a future phase, where it will serve as the integration point for a frontend or API layer.
 
