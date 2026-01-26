@@ -2,10 +2,26 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+from backend.utils.log_filters import AllowOnlyAppLogs
+
 _LOGGER_INITIALIZED = False
 
 
+APP_LOGGER_PREFIXES = (
+    "INGESTION_WORKFLOW",
+    "LLM_Client",
+    "NOTEBOOK",
+    "CHUNKING",
+    "ETL",
+    "DATA_CLEANER",
+    "JSONL",
+    "VECTORSTORE",
+    "RETRIEVER",
+    "CHAT_RAG"
+)
+
 def setup_logging():
+
     project_root = Path(__file__).resolve().parents[3]  
     global _LOGGER_INITIALIZED
 
@@ -34,8 +50,10 @@ def setup_logging():
     # Console Handler
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.DEBUG)
-    # console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
+    console_handler.addFilter(
+        AllowOnlyAppLogs(APP_LOGGER_PREFIXES)
+    )
 
     root_logger.addHandler(file_handler)
     root_logger.addHandler(console_handler)

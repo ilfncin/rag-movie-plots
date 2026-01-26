@@ -2,7 +2,7 @@ from typing import List
 from langchain_text_splitters import (
     RecursiveCharacterTextSplitter
 )
-from backend.pipelines.chunking.chunk_strategy import ChunkStrategy
+from .chunk_strategy import ChunkStrategy
 
 
 class RecursiveSplitter(ChunkStrategy):

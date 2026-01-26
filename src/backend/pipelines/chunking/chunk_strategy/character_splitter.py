@@ -1,5 +1,5 @@
 from langchain_text_splitters import CharacterTextSplitter
-from backend.pipelines.chunking.chunk_strategy import ChunkStrategy
+from .chunk_strategy import ChunkStrategy
 
 
 class CharacterSplitter(ChunkStrategy):

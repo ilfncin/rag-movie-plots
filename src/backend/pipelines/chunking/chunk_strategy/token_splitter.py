@@ -3,7 +3,7 @@ from langchain_text_splitters import (
     TokenTextSplitter
 )
 
-from backend.pipelines.chunking.chunk_strategy import ChunkStrategy
+from .chunk_strategy import ChunkStrategy
 
 class TokenSplitter(ChunkStrategy):
     def __init__(self, chunk_size=300, chunk_overlap=50):
