@@ -20,29 +20,34 @@ It demonstrates an end-to-end RAG pipeline - from ingestion to evaluation - usin
 
 ## **High-Level RAG Architecture**
 
+![High-level RAG architecture](docs/architecture/rag_architecture.svg)
+> **Figure 1.** High-level architecture of the RAG Movie Plots project, highlighting the separation between offline ingestion and online retrieval and generation.
+
+
+
 This project follows a **two-phase Retrieval-Augmented Generation (RAG) architecture** designed to enforce a clean separation between **offline data preparation** and **online retrieval and generation**. The pipeline is decomposed into **five modular components**, distributed across these two phases.
 
-## **Phase 1 - Offline Ingestion Pipeline**
+## **Phase 1 - Offline Ingestion**
 
 Phase 1 prepares all data required for retrieval and runs entirely offline. It is responsible for transforming raw tabular data into a searchable vector representation.
 
 ### **Modules in Phase 1**
 
-1. **ETL - Data Cleaning and JSONL Generation**
+1. **ETL - Data Cleaning & JSONL Generation**
     - Loads the raw CSV dataset
     - Cleans, normalizes, and standardizes individual columns
     - Generates structured documents in `docs.jsonl`
 
    > The ETL layer intentionally focuses on cleaning and standardizing values within individual columns, such as removing uninformative entries and normalizing text formats, without engaging in more complex structural corrections that depend on relationships across multiple fields. These more intricate transformations, such as cross-column consistency checks or semantic deduplication, are intentionally deferred to future iterations, where context-aware strategies can be applied more effectively.
 
-2. **Chunking - Strategy Exploration and Text Segmentation**
+2. **Chunking - Text Segmentation**
     - Splits long movie plots into smaller, overlapping text chunks
     - Applies configurable chunking strategies
     - Produces `chunks.jsonl`
 
     > Chunking parameters (chunk size, overlap, separator hierarchy) are grounded in a dedicated exploratory analysis of text structure, rather than heuristic defaults.
 
-3. **Vector Store - Embedding and Persistence**
+3. **Embedding & Vector Persistence**
     - Generates dense embeddings for all chunks
     - Builds and persists a ChromaDB vector store at:
      ```bash
@@ -51,13 +56,13 @@ Phase 1 prepares all data required for retrieval and runs entirely offline. It i
 
      > The resulting vector store represents the final output of the offline ingestion phase and serves as the sole knowledge source for online retrieval.
 
-## **Phase 2 - Online RAG Workflow**
+## **Phase 2 - Online Retrieval & Genaration**
 
 Phase 2 handles the **online querying flow**, combining semantic retrieval with controlled language generation to answer user questions.
 
 ### **Modules in Phase 2**
 
-4. **Retrieval - Semantic Search and Context Selection**
+4. **Retrieval - Semantic Search & Filtering**
     - Loads the persisted vector store
     - Encodes user queries using the same embedding model as ingestion
     - Executes semantic similarity search over embedded chunks
@@ -66,7 +71,7 @@ Phase 2 handles the **online querying flow**, combining semantic retrieval with 
 
     > Retrieval behavior is explicitly observable through structured logs, enabling inspection and debugging before any generation occurs.
 
-5. **Generation - Prompt Construction and Answer Synthesis**
+5. **Generation - Prompt & Answer Synthesis**
     - Constructs structured RAG prompts from the retrieved context
     - Applies strict prompt-level constraints to prevent hallucinations
     - Generates final answers via the selected large language model (LLM)
