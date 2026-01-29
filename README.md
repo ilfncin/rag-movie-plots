@@ -31,52 +31,73 @@ This project follows a **two-phase Retrieval-Augmented Generation (RAG) architec
 
 Phase 1 prepares all data required for retrieval and runs entirely offline. It is responsible for transforming raw tabular data into a searchable vector representation.
 
-### **Modules in Phase 1**
 
-1. **ETL - Data Cleaning & JSONL Generation**
-    - Loads the raw CSV dataset
-    - Cleans, normalizes, and standardizes individual columns
-    - Generates structured documents in `docs.jsonl`
+### **Module 1 - ETL: Data Cleaning & JSONL Generation**
 
-   > The ETL layer intentionally focuses on cleaning and standardizing values within individual columns, such as removing uninformative entries and normalizing text formats, without engaging in more complex structural corrections that depend on relationships across multiple fields. These more intricate transformations, such as cross-column consistency checks or semantic deduplication, are intentionally deferred to future iterations, where context-aware strategies can be applied more effectively.
+![ETL architecture](docs/architecture/etl_data_cleaning_jsonl_architecture.svg)
+> **Figure 2.** ETL module architecture showing how the DataPipeline orchestrates data cleaning and JSONL serialization, producing the `docs.jsonl` artifact used by downstream stages.
 
-2. **Chunking - Text Segmentation**
-    - Splits long movie plots into smaller, overlapping text chunks
-    - Applies configurable chunking strategies
-    - Produces `chunks.jsonl`
+This module is responsible for transforming the raw tabular dataset into a clean, structured, and serialized document representation suitable for downstream chunking and embedding.
 
-    > Chunking parameters (chunk size, overlap, separator hierarchy) are grounded in a dedicated exploratory analysis of text structure, rather than heuristic defaults.
+**Key responsibilities:**
+- Load the raw CSV dataset
+- Clean, normalize, and standardize individual columns
+- Generate structured documents in `docs.jsonl`
 
-3. **Embedding & Vector Persistence**
-    - Generates dense embeddings for all chunks
-    - Builds and persists a ChromaDB vector store at:
-     ```bash
-     db/chroma/
-     ```
+> The ETL layer intentionally focuses on cleaning and standardizing values within individual columns, such as removing uninformative entries and normalizing text formats, without engaging in more complex structural corrections that depend on relationships across multiple fields. These more intricate transformations, such as cross-column consistency checks or semantic deduplication, are intentionally deferred to future iterations, where context-aware strategies can be applied more effectively.
 
-     > The resulting vector store represents the final output of the offline ingestion phase and serves as the sole knowledge source for online retrieval.
+### **Module 2 - Chunking: Text Segmentation**
+
+![Chunking architecture](docs/architecture/chuncking_text_segmentation_architecture.svg)
+> **Figure 3.** Chunking module architecture illustrating the strategy-based design used to segment documents into overlapping text chunks, producing the `chunks.jsonl` artifact.
+
+**Key responsibilities:**
+- Splits movie plots into smaller, overlapping text chunks
+- Applies configurable chunking strategies
+- Produces `chunks.jsonl`
+
+> Chunking parameters (chunk size, overlap, separator hierarchy) are grounded in a dedicated exploratory analysis of text structure, rather than heuristic defaults, as documented in the notebook: **`notebooks/1.1.ilfn-chunking_strategy_exploration`**.
+
+### **Module 3 - Embedding & Vector Persistence**
+
+![Vector store architecture](docs/architecture/vectorstore_embedding_architecture.svg)
+> **Figure 4.** Vector store module architecture depicting the embedding generation process and persistence of chunk vectors into a ChromaDB collection used for online retrieval.
+
+**Key responsibilities:**
+- Generates dense embeddings for all chunks
+- Builds and persists a ChromaDB vector store at: `db/chroma/`
+
+> The resulting vector store represents the final output of the offline ingestion phase and serves as the sole knowledge source for online retrieval.
 
 ## **Phase 2 - Online Retrieval & Genaration**
 
 Phase 2 handles the **online querying flow**, combining semantic retrieval with controlled language generation to answer user questions.
 
-### **Modules in Phase 2**
+### **Module 4 - Retrieval: Semantic Search & Filtering**
 
-4. **Retrieval - Semantic Search & Filtering**
-    - Loads the persisted vector store
-    - Encodes user queries using the same embedding model as ingestion
-    - Executes semantic similarity search over embedded chunks
-    - Optionally applies distance-based filtering
-    - Selects and assembles a ranked contextual set for generation
+![Retrieval architecture](docs/architecture/retrieval_architecture.svg)
+> **Figure 5.** Retrieval module architecture showing how user queries are embedded, matched against the persisted vector store, and filtered to assemble a ranked context for generation.
 
-    > Retrieval behavior is explicitly observable through structured logs, enabling inspection and debugging before any generation occurs.
+**Key responsibilities:**
+- Loads the persisted vector store
+- Encodes user queries using the same embedding model as ingestion
+- Executes semantic similarity search over embedded chunks
+- Optionally applies distance-based filtering
+- Selects and assembles a ranked contextual set for generation
 
-5. **Generation - Prompt & Answer Synthesis**
-    - Constructs structured RAG prompts from the retrieved context
-    - Applies strict prompt-level constraints to prevent hallucinations
-    - Generates final answers via the selected large language model (LLM)
+> Retrieval behavior is explicitly observable through structured logs, enabling inspection and debugging before any generation occurs.
 
-    > Both the generated answer and the exact context used are exposed, ensuring traceability and reproducibility.
+### **Module 5 - Generation: Prompt & Answer Synthesis**
+
+![Generation architecture](docs/architecture/generation_architecture.svg)
+> **Figure 6.** Generation module architecture illustrating structured prompt construction and controlled answer synthesis using the selected large language model.
+
+**Key responsibilities:**
+- Constructs structured RAG prompts from the retrieved context
+- Applies strict prompt-level constraints to prevent hallucinations
+- Generates final answers via the selected large language model (LLM)
+
+> Both the generated answer and the exact context used are exposed, ensuring traceability and reproducibility.
 
 
 Each module is implemented independently and communicates only through **well-defined data artifacts** (e.g., JSONL files, vector stores, retrieved context). 
@@ -204,16 +225,27 @@ Simply **restart the Jupyter kernel** and run the cell again. This clears the ac
 
 ---
 
-
 ## **Status**
 
-This repository is under active development. At this stage of the project:
-- All pipelines are executed directly from notebooks
-- `main.py` is not the primary entry point
-- The notebooks act as:
-    - executable documentation,
-    - experiment runners,
-    - and validation tools
+This repository is under active development.
 
-> The `main.py` file is reserved for a future phase, where it will serve as the integration point for a frontend or API layer.
+At the current stage:
+- All pipelines are executed directly from Jupyter notebooks
+- `main.py` is **not** the primary entry point
+- Notebooks act as:
+  - executable documentation
+  - experiment runners
+  - pipeline validation tools
+
+### **Planned Next Steps**
+- **RAG Evaluation**  
+  Implement systematic evaluation of the RAG pipeline using **RAGAS** (faithfulness, relevance, context precision/recall).
+- **Application Layer**  
+  Evolve the project into a runnable application by:
+  - defining `main.py` as the primary entry point
+  - integrating a frontend or API layer
+  - supporting interactive user queries beyond notebooks
+
+> The `main.py` file is reserved for a future phase, where it will serve as the integration and execution layer for the full RAG application.
+
 
