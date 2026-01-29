@@ -117,6 +117,9 @@ rag-movie-plots/
 ├── db/
 │   └── chroma/                     # Persisted ChromaDB vector store (SQLite + index)
 │
+├── docs/
+│   └── diagrams/                   # Architecture and pipeline diagrams
+│
 ├── logs/                           # Timestamped application logs
 │
 ├── notebooks/                      # Jupyter notebooks for EDA, pipeline tests and RAG evaluation
