@@ -2,9 +2,9 @@
 
 **RAG Movie Plots** is a modular, research-oriented Retrieval-Augmented Generation (RAG) project built on top of the [Wikipedia Movie Plots dataset](https://www.kaggle.com/datasets/jrobischon/wikipedia-movie-plots). 
 
-The project focuses on **architectural clarity**, **empirical design decisions**, and **observability**, rather than providing a black-box RAG demo. Each stage of the pipeline is explicitly modeled, documented, and validated through exploratory analysis and controlled experiments.
+Rather than just presenting a working RAG example, the project focuses on **architectural clarity**, empirical design choices, and observability. Each stage of the pipeline is documented, examined, and tested through exploratory analysis and controlled experiments.
 
-It demonstrates an end-to-end RAG pipeline - from ingestion to evaluation - using **LangChain**, **ChromaDB** and **RAGAS**. It retrieves relevant movie descriptions and answers user questions using a language model (LLM) such as OpenAI’s `gpt-4o-mini`.
+It demonstrates an end-to-end RAG pipeline, from ingestion to evaluation, using **LangChain**, **ChromaDB** and **RAGAS**. It retrieves relevant movie descriptions and answers user questions using a language model (LLM) such as OpenAI's `gpt-4o-mini`.
 
 ---
 
@@ -18,21 +18,20 @@ It demonstrates an end-to-end RAG pipeline - from ingestion to evaluation - usin
 
 ---
 
-## **High-Level RAG Architecture**
+## **Architectural Separation**
 
 ![High-level RAG architecture](docs/architecture/rag_architecture.svg)
-> **Figure 1.** High-level architecture of the RAG Movie Plots project, highlighting the separation between offline ingestion and online retrieval and generation.
-
+> **Figure 1.** Separation between offline knowledge construction and runtime retrieval and generation.
 
 
 This project follows a **two-phase Retrieval-Augmented Generation (RAG) architecture** designed to enforce a clean separation between **offline data preparation** and **online retrieval and generation**. The pipeline is decomposed into **five modular components**, distributed across these two phases.
 
-## **Phase 1 - Offline Ingestion**
+## **Phase 1: Offline Ingestion**
 
 Phase 1 prepares all data required for retrieval and runs entirely offline. It is responsible for transforming raw tabular data into a searchable vector representation.
 
 
-### **Module 1 - ETL: Data Cleaning & JSONL Generation**
+### **Module 1 - ETL: Data Cleaning and JSONL Generation**
 
 ![ETL architecture](docs/architecture/etl_data_cleaning_jsonl_architecture.svg)
 > **Figure 2.** ETL module architecture showing how the DataPipeline orchestrates data cleaning and JSONL serialization, producing the `docs.jsonl` artifact used by downstream stages.
@@ -56,12 +55,12 @@ This module is responsible for transforming the raw tabular dataset into a clean
 - Applies configurable chunking strategies
 - Produces `chunks.jsonl`
 
-> Chunking parameters (chunk size, overlap, separator hierarchy) are grounded in a dedicated exploratory analysis of text structure, rather than heuristic defaults, as documented in the notebook: **`notebooks/1.1.ilfn-chunking_strategy_exploration`**.
+> Chunking parameters (chunk size, overlap, separator hierarchy) are grounded in a dedicated exploratory analysis of text structure, rather than heuristic defaults, as documented in the notebook: [1.1.ilfn-chunking_strategy_exploration.ipynb](notebooks/1.1.ilfn-chunking_strategy_exploration.ipynb).
 
-### **Module 3 - Embedding & Vector Persistence**
+### **Module 3 - Embedding and Vector Persistence**
 
 ![Vector store architecture](docs/architecture/vectorstore_embedding_architecture.svg)
-> **Figure 4.** Vector store module architecture depicting the embedding generation process and persistence of chunk vectors into a ChromaDB collection used for online retrieval.
+> **Figure 4.** Vector store module architecture showing how embeddings are generated and persisted in a ChromaDB collection for retrieval.
 
 **Key responsibilities:**
 - Generates dense embeddings for all chunks
@@ -69,11 +68,11 @@ This module is responsible for transforming the raw tabular dataset into a clean
 
 > The resulting vector store represents the final output of the offline ingestion phase and serves as the sole knowledge source for online retrieval.
 
-## **Phase 2 - Online Retrieval & Genaration**
+## **Phase 2: Online Retrieval and Genaration**
 
 Phase 2 handles the **online querying flow**, combining semantic retrieval with controlled language generation to answer user questions.
 
-### **Module 4 - Retrieval: Semantic Search & Filtering**
+### **Module 4 - Retrieval: Semantic Search and Filtering**
 
 ![Retrieval architecture](docs/architecture/retrieval_architecture.svg)
 > **Figure 5.** Retrieval module architecture showing how user queries are embedded, matched against the persisted vector store, and filtered to assemble a ranked context for generation.
@@ -87,7 +86,7 @@ Phase 2 handles the **online querying flow**, combining semantic retrieval with 
 
 > Retrieval behavior is explicitly observable through structured logs, enabling inspection and debugging before any generation occurs.
 
-### **Module 5 - Generation: Prompt & Answer Synthesis**
+### **Module 5 - Generation: Prompt and Answer Synthesis**
 
 ![Generation architecture](docs/architecture/generation_architecture.svg)
 > **Figure 6.** Generation module architecture illustrating structured prompt construction and controlled answer synthesis using the selected large language model.
@@ -163,35 +162,35 @@ rag-movie-plots/
 **1.0 - Initial Data Exploration**
 
 Exploratory analysis of the raw dataset:
-- distribution of plot lengths
-- structural inconsistencies
-- missing and noisy fields
+- Distribution of plot lengths
+- Dtructural inconsistencies
+- Missing and noisy fields
 
 **1.1 - Chunking Strategy Exploration**
 
 A focused, data-driven study of:
-- characters per plot
-- number of lines and paragraphs
-- maximum line length
+- Characters per plot
+- Number of lines and paragraphs
+- Maximum line length
 
 This notebook directly informs:
-- chunk size
-- overlap
-- choice of recursive character-based chunking
+- Chunk size
+- Overlap
+- Choice of recursive character-based chunking
 
 **2.0 - Ingestion Pipeline**
 
 End-to-end offline ingestion:
-- ETL → docs.jsonl
-- Chunking → chunks.jsonl
+- ETL: docs.jsonl
+- Chunking: chunks.jsonl
 - Embedding + ChromaDB persistence
 
 **3.0 - Online RAG Queries**
 
 Query-time experiments:
-- retriever-only inspection
+- Retriever-only inspection
 - RAG vs LLM-only comparison
-- context inspection and debugging
+- Context inspection and debugging
 
 
 ## **Environment Setup**
@@ -216,7 +215,7 @@ Update the variables according to your local setup.
 ---
 
 
-##  **Note - attempt to write a readonly database error**
+##  **Note: attempt to write a readonly database error**
 
 If you encounter the following error while running the `2.0-ilfn-rag-ingestion-pipeline.ipynb` notebook:
 
@@ -236,18 +235,18 @@ At the current stage:
 - All pipelines are executed directly from Jupyter notebooks
 - `main.py` is **not** the primary entry point
 - Notebooks act as:
-  - executable documentation
-  - experiment runners
-  - pipeline validation tools
+  - Executable documentation
+  - Experiment runners
+  - Pipeline validation tools
 
 ### **Planned Next Steps**
 - **RAG Evaluation**  
   Implement systematic evaluation of the RAG pipeline using **RAGAS** (faithfulness, relevance, context precision/recall).
 - **Application Layer**  
   Evolve the project into a runnable application by:
-  - defining `main.py` as the primary entry point
-  - integrating a frontend or API layer
-  - supporting interactive user queries beyond notebooks
+  - Defining `main.py` as the primary entry point
+  - Integrating a frontend or API layer
+  - Supporting interactive user queries beyond notebooks
 
 > The `main.py` file is reserved for a future phase, where it will serve as the integration and execution layer for the full RAG application.
 
