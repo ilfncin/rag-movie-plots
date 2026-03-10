@@ -55,7 +55,7 @@ This module is responsible for transforming the raw tabular dataset into a clean
 - Applies configurable chunking strategies
 - Produces `chunks.jsonl`
 
-> Chunking parameters (chunk size, overlap, separator hierarchy) are grounded in a dedicated exploratory analysis of text structure, rather than heuristic defaults, as documented in the notebook: [1.1.ilfn-chunking_strategy_exploration.ipynb](notebooks/1.1.ilfn-chunking_strategy_exploration.ipynb).
+> Chunking parameters (chunk size, overlap, separator hierarchy) are grounded in a dedicated exploratory analysis of text structure, rather than heuristic defaults, as documented in the notebook: [2.0-ilfn-chunking_strategy_exploration.ipynb](notebooks/2.0-ilfn-chunking_strategy_exploration.ipynb).
 
 ### **Module 3 - Embedding and Vector Persistence**
 
@@ -123,9 +123,9 @@ rag-movie-plots/
 │
 ├── notebooks/                      # Jupyter notebooks for EDA, pipeline tests and RAG evaluation
 │   ├── 1.0-ilfn-initial-data-exploration.ipynb
-│   ├── 1.1-ilfn-chunking-strategy-exploration.ipynb
-│   ├── 2.0-ilfn-rag-ingestion-pipeline.ipynb
-│   ├── 3.0-ilfn-rag-online-query.ipynb
+│   ├── 2.0-ilfn-chunking-strategy-exploration.ipynb
+│   ├── 3.0-ilfn-rag-ingestion-pipeline.ipynb
+│   ├── 4.0-ilfn-rag-online-query.ipynb
 │   └── notebook_setup.py          
 │
 ├── src/
@@ -166,7 +166,7 @@ Exploratory analysis of the raw dataset:
 - Dtructural inconsistencies
 - Missing and noisy fields
 
-**1.1 - Chunking Strategy Exploration**
+**2.0 - Chunking Strategy Exploration**
 
 A focused, data-driven study of:
 - Characters per plot
@@ -178,14 +178,14 @@ This notebook directly informs:
 - Overlap
 - Choice of recursive character-based chunking
 
-**2.0 - Ingestion Pipeline**
+**3.0 - Ingestion Pipeline**
 
 End-to-end offline ingestion:
 - ETL: docs.jsonl
 - Chunking: chunks.jsonl
 - Embedding + ChromaDB persistence
 
-**3.0 - Online RAG Queries**
+**4.0 - Online RAG Queries**
 
 Query-time experiments:
 - Retriever-only inspection
